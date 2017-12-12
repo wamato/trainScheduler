@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <title>Train Scheduler!</title>
+    <meta charset ="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
+    <style>
+        .jumbotron {
+            background-color: black;
+        }
+
+        #jumbo-h1 {
+            color: white;
+            text-align: center;
+        }
+
+        #jumbo-sub {
+            color: white;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="main">
+        <div class="row" id="header">
+            <div class="col-xs-12">
+                <div class="jumbotron">
+                    <h1 id="jumbo-h1">
+                        <span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span>
+                        Train Times!</h1>
+                    <p id="jumbo-sub">When will your next train arrive?</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-primary">
+
+                    <div class="panel-heading">Train Times</div>
+
+
+                    <div class="empTable">
+                        <table id ="empTable"class="table">
+
+                            <thead>
+                                <tr>
+                                    <th>Train Name</th>
+                                    <th>Destination</th>
+                                    <th>First Train Time</th>
+                                    <th>Frequency</th>
+                                    <th>Next Arrival</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- dynamically generated train times -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <b>Add train</b>
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>
+                            <b>Train Name</b>
+                        </p>
+                        <div class="input-group">
+                            <input id="trainName" type="text" class="form-control" aria-describedby="sizing-addon2" size=150>
+                        </div>
+                        <br>
+                        <p>
+                            <b>Destination</b>
+                        </p>
+                        <div class="input-group">
+                            <input id="trainDest" type="text" class="form-control" aria-describedby="sizing-addon2" size=150>
+                        </div>
+                        <br>
+                        <p>
+                            <b>First train time</b>
+                        </p>
+                        <div class="input-group">
+                            <input id="trainTime" type="text" class="form-control" aria-describedby="sizing-addon2" size=150>
+                        </div>
+                        <br>
+                        <p>
+                            <b>Frequency (minutes)</b>
+                        </p>
+                        <div class="input-group">
+                            <input id="trainFreq" type="text" class="form-control" aria-describedby="sizing-addon2" size=150>
+                        </div>
+                        <br>
+                        <button id="submit-button" type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+    <script>
+        //link firebase database stuff
+        var config = {
+            apiKey: "AIzaSyDG_68FuZKEtbbPTeoGyZv9hK523JRWGw4",
+            authDomain: "my-awesome-project-a9fa5.firebaseapp.com",
+            databaseURL: "https://my-awesome-project-a9fa5.firebaseio.com",
+            projectId: "my-awesome-project-a9fa5",
+            storageBucket: "my-awesome-project-a9fa5.appspot.com",
+            messagingSenderId: "937436059345"
+        };
+        firebase.initializeApp(config);
+        var database = firebase.database();
+
+        $("#submit-button").on("click", function () {
+            event.preventDefault();
+            // console.log("this button is working");
+            var trainName = $("#trainName").val().trim();
+            var trainDest = $("#trainDest").val().trim();
+            var trainTime = $("#trainTime").val().trim();
+            var trainFreq = $("#trainFreq").val().trim();
+            console.log(trainName);
+            console.log(trainDest);
+            console.log(trainTime);
+            console.log(trainFreq);
+            $(".form-control").val("");
+            alert("Train Sucessfully added!")
+
+            var NewTrain = {
+                name: trainName,
+                dest: trainDest,
+                time: trainTime,
+                freq: trainFreq
+            };
+            database.ref().push(NewTrain)
+        });
+
+       
+        database.ref().on("child_added",function(childSnapshot, prevChildKey){
+            console.log(childSnapshot.val());
+            var currentTrain = childSnapshot.val();
+            // var formRow = $("<table><td></td><td></td><td></td><td></td></table>")
+            //store everyting in a variable
+            var tName = currentTrain.name;
+            var tDest = currentTrain.dest;
+            var tTime = currentTrain.time;
+            var tFreq = currentTrain.freq;
+            console.log(tName);
+            console.log(tDest);
+            console.log(tTime);
+            console.log(tFreq);
+
+            $("#empTable > tbody").append(`<tr><td>${tName}</td><td>${tDest}</td><td${tTime}</td><td>${tFreq}</td></tr>`)
+        });
+    </script>
+</body>
+
+</html>
